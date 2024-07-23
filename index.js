@@ -65,7 +65,6 @@ app.post("/create", upload.single("image"), async function(req,res){
 
 app.get("/", async function(req,res){
     const bloglist = await blog.find({})
-    .limit(10)
     .sort({createdAt:-1});
     res.json({
         list: bloglist
