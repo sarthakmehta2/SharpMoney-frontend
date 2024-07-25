@@ -13,23 +13,18 @@ const uploadImage = require('./imgurConfig');
 const app = express();
 
 app.use(cors({}));
+
+app.use(cors({
+    origin: 'https://sharpmoney.co.in',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(express.json());
 
 const storage = multer.memoryStorage();
-
-// const storage = multer.diskStorage({
-//     destination: (req, file, cb) => {
-//         cb(null, "uploads/");
-//     },
-//     filename: (req, file, cb) => {
-//         cb(null, Date.now() + "-" + file.originalname);
-//     }
-// });
-
 const upload = multer({ storage: storage });
-
-
 
 app.post("/create", upload.single("image"), async function(req,res){
     const createPayload = req.body;

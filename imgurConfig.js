@@ -1,5 +1,7 @@
 // imgurConfig.js
 const axios = require('axios');
+require('dotenv').config({path: "../.env"});
+
 
 const uploadImage = async (image) => {
     const formData = new FormData();
