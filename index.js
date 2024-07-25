@@ -12,7 +12,7 @@ const uploadImage = require('./imgurConfig');
 
 const app = express();
 
-app.use(cors());
+// app.use(cors());
 
 app.use(cors({
     origin: 'https://www.sharpmoney.co.in',
