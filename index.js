@@ -8,6 +8,7 @@ const fs = require("fs");
 const slugify = require("slugify");
 const { format } = require('date-fns');
 const path = require("path");
+const uploadImage = require('./imgurConfig');
 
 const app = express();
 
@@ -15,14 +16,16 @@ app.use(cors({}));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(express.json());
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, "uploads/");
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + "-" + file.originalname);
-    }
-});
+const storage = multer.memoryStorage();
+
+// const storage = multer.diskStorage({
+//     destination: (req, file, cb) => {
+//         cb(null, "uploads/");
+//     },
+//     filename: (req, file, cb) => {
+//         cb(null, Date.now() + "-" + file.originalname);
+//     }
+// });
 
 const upload = multer({ storage: storage });
 
@@ -35,7 +38,7 @@ app.post("/create", upload.single("image"), async function(req,res){
         return res.status(400).json({ error: 'Image upload failed' });
     }
 
-    const imageUrl = `/uploads/${image.filename}`;
+    const imageUrl = await uploadImage(image);
     const slug = slugify(createPayload.title);
 
     switch (true) {
