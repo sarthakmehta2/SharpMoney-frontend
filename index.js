@@ -12,15 +12,21 @@ const uploadImage = require('./imgurConfig');
 
 const app = express();
 
-app.use(cors());
+// app.use(cors());
 
-app.use(cors({
-    origin: 'https://www.sharpmoney.co.in',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-}));
+// app.use(cors({
+//     origin: 'https://www.sharpmoney.co.in',
+//     methods: ['GET', 'POST', 'PUT', 'DELETE'],
+//     allowedHeaders: ['Content-Type', 'Authorization']
+// }));
 
-// app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "https://www.sharpmoney.co.in");
+    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    next();
+});
+
 app.use(express.json());
 
 const storage = multer.memoryStorage();
