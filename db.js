@@ -40,6 +40,12 @@ date:{
 },
 imageUrl:{
     type: String
+},
+tags:[{
+    type: String
+}],
+tagsblogs:{
+    type: String
 }
 },
 {timestamps:true}

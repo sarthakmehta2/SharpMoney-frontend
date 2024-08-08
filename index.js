@@ -21,7 +21,8 @@ const app = express();
 // }));
 
 app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "https://www.sharpmoney.co.in");
+    // res.header("Access-Control-Allow-Origin", "https://www.sharpmoney.co.in"); //use this for prod
+    res.header("Access-Control-Allow-Origin", "http://localhost:5173" ) //use this for dev
     res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
     res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
     next();
@@ -53,13 +54,17 @@ app.post("/create", upload.single("image"), async function(req,res){
     const today = new Date();
     const formatdate = format(today, 'dd-MM-yyyy');
 
+    const tagsArray = createPayload.tags.split(',').map(tag=>tag.trim());
+
     const post = new blog({
         title: createPayload.title,
         content: createPayload.content,
         user: createPayload.user,
         slug: slug,
         date: formatdate,
-        imageUrl: imageUrl
+        imageUrl: imageUrl,
+        tags: tagsArray,
+        tagsblogs: createPayload.tags
     });
 
     await post.save();
@@ -70,10 +75,38 @@ app.post("/create", upload.single("image"), async function(req,res){
 app.get("/", async function(req,res){
     const bloglist = await blog.find({})
     .sort({createdAt:-1});
+
+     // Extract all tags and flatten the array
+     const allTags = bloglist.reduce((acc, blog) => {
+        if (typeof blog.tags === 'string') {
+            acc.push(...blog.tags.split(',').map(tag => tag.trim()));
+        } else {
+            acc.push(...blog.tags);
+        }
+        return acc;
+    }, []);
+
+    // Get unique tags
+    const uniqueTags = [...new Set(allTags)];
+
     res.json({
-        list: bloglist
+        list: bloglist,
+        tags: uniqueTags
     });
+
+    console.log(uniqueTags);
+    // const taglist = bloglist.map(item => item.tags);
+    // console.log(taglist);
+    // const exhaustivetags = [];
+    // const emptyarray =[];
+    // const newarr = bloglist.map(item => {
+    //     const newarr2 = item.tags.split(',');
+    //     console.log(newarr2);
+    //     exhaustivetags.push(item.tags);
+    // })
+    // console.log(exhaustivetags);
 })
+
 
 app.get("/blog/:slug", async function(req,res){
     const {slug} = req.params;
